@@ -197,13 +197,13 @@ npm run dev
 
 ## (.env)
 ```bash
-PORT=5000
+PORT=your_port
 MONGODB_URI=your_mongodb_uri
 JWT_ACCESS_SECRET=your_secret
 JWT_REFRESH_SECRET=your_secret
 JWT_ACCESS_EXPIRES=15m
 JWT_REFRESH_EXPIRES=7d
-CLIENT_URL=http://localhost:5173
+CLIENT_URL=your_client_url
 ```
 ---
 

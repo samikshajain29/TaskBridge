@@ -86,7 +86,7 @@ It allows teams to manage projects, assign tasks, and track progress with **role
 
 ## 📂 Project Structure
 ```
-TaskFlow/
+TaskBridge/
 ├── backend/
 │ ├── server.js
 │ └── src/

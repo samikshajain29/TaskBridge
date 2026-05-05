@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: "https://taskbridgeserver.onrender.com",
+  baseURL: "https://taskbridgeserver.onrender.com/api",
   withCredentials: true, // Necessary to send/receive httpOnly cookies for refresh token
 });
 

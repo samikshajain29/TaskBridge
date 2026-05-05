@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: "https://taskbridgeserver.onrender.com/api",
   withCredentials: true, // Necessary to send/receive httpOnly cookies for refresh token
 });
 
@@ -32,7 +32,7 @@ api.interceptors.response.use(
       try {
         // Attempt to get a new access token via refresh endpoint
         const res = await axios.post(
-          `${import.meta.env.VITE_API_URL}/api/auth/refresh`,
+          `${import.meta.env.VITE_API_URL}/auth/refresh`,
           {},
           { withCredentials: true },
         );

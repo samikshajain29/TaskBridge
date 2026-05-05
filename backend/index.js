@@ -19,7 +19,7 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173', // Update according to your frontend
+    origin: "https://taskbridge-frontend.onrender.com",
     credentials: true,
   })
 );

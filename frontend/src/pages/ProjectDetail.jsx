@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchKanbanTasks, updateKanbanStateLocally, reorderTasksThunk, createTaskThunk, updateTaskThunk } from '../features/tasks/taskSlice';
@@ -19,6 +19,7 @@ import AddTaskModal from '../components/kanban/AddTaskModal';
 import EditTaskModal from '../components/kanban/EditTaskModal';
 import TaskDetailModal from '../components/kanban/TaskDetailModal';
 import AddMemberModal from '../components/AddMemberModal';
+import Button from '../components/Button';
 import { Plus, UserPlus } from 'lucide-react';
 import api from '../api/axiosConfig';
 import { useAuth } from '../context/AuthContext';
@@ -39,20 +40,21 @@ const ProjectDetail = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const fetchProjectDetails = async () => {
+  const fetchProjectDetails = useCallback(async () => {
     try {
       const { data } = await api.get(`/projects/${projectId}`);
       setProject(data);
     } catch (err) {
       console.error('Failed to fetch project details', err);
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
     dispatch(fetchKanbanTasks(projectId));
     dispatch(fetchProjectDashboardMetrics(projectId));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProjectDetails();
-  }, [dispatch, projectId]);
+  }, [dispatch, projectId, fetchProjectDetails]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -188,42 +190,60 @@ const ProjectDetail = () => {
   const assignableMembers = project?.members?.filter(m => m.role !== 'admin').map(m => m.user) || [];
 
   return (
-    <div className="flex flex-col min-h-screen p-4 bg-gray-50">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">{project?.name || 'Project Board'}</h1>
-          <p className="text-gray-500 mt-1">Manage tasks across different stages</p>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex -space-x-2">
-            {project?.members?.map((m) => (
-              m.user?.avatar ? (
-                <img key={m.user._id} src={m.user.avatar} alt={m.user.name} className="w-8 h-8 rounded-full border-2 border-gray-50" title={`${m.user.name} (${m.role})`} />
-              ) : (
-                <div key={m.user?._id || Math.random()} className="w-8 h-8 rounded-full border-2 border-gray-50 bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-600" title={`${m.user?.name} (${m.role})`}>
-                  {m.user?.name?.charAt(0).toUpperCase()}
-                </div>
-              )
-            ))}
+    <div className="flex flex-col min-h-screen p-6 lg:p-10 bg-zinc-50 font-sans">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
+        <div className="animate-in fade-in slide-in-from-left-4 duration-700">
+          <div className="flex items-center gap-3 mb-2">
+             <div className="px-2 py-0.5 bg-primary-100 text-primary-700 text-[10px] font-bold rounded-md uppercase tracking-wider">Project Board</div>
+             <div className="w-1.5 h-1.5 rounded-full bg-zinc-300"></div>
+             <div className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{project?.members?.length || 0} Members</div>
           </div>
+          <h1 className="text-4xl font-extrabold text-zinc-900 tracking-tight font-display">{project?.name || 'Project Board'}</h1>
+          <p className="text-zinc-500 mt-2 text-sm max-w-xl leading-relaxed">Collaborate with your team, track progress, and ship faster with TaskBridge.</p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-6 animate-in fade-in slide-in-from-right-4 duration-700">
+          <div className="flex -space-x-3">
+            {project?.members?.map((m, idx) => (
+              <div key={m.user?._id || idx} className="relative group/member">
+                {m.user?.avatar ? (
+                  <img src={m.user.avatar} alt={m.user.name} className="w-10 h-10 rounded-2xl border-4 border-zinc-50 ring-1 ring-zinc-100 object-cover" title={`${m.user.name} (${m.role})`} />
+                ) : (
+                  <div className="w-10 h-10 rounded-2xl border-4 border-zinc-50 bg-primary-100 flex items-center justify-center text-sm font-bold text-primary-600 ring-1 ring-zinc-100" title={`${m.user?.name} (${m.role})`}>
+                    {m.user?.name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </div>
+            ))}
+            {isAdmin && (
+               <button 
+                onClick={() => setIsMemberModalOpen(true)}
+                className="w-10 h-10 rounded-2xl border-4 border-zinc-50 bg-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-zinc-200 hover:text-zinc-600 transition-all ring-1 ring-zinc-100"
+               >
+                 <Plus className="w-5 h-5" />
+               </button>
+            )}
+          </div>
+
           {isAdmin && (
             <div className="flex items-center gap-3">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => setIsMemberModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 font-medium text-white transition-all duration-200 bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 hover:shadow"
-            >
-              <UserPlus className="w-4 h-4" />
-              Add Member
-            </button>
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 font-medium text-white transition-all duration-200 bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 hover:shadow"
-            >
-              <Plus className="w-4 h-4" />
-              Add Task
-            </button>
-          </div>
-        )}
+                className="hidden sm:flex gap-2 border-zinc-200"
+              >
+                <UserPlus className="w-4 h-4" />
+                Invite
+              </Button>
+              <Button
+                onClick={() => setIsAddModalOpen(true)}
+                className="gap-2 shadow-primary-200"
+              >
+                <Plus className="w-4 h-4" />
+                New Task
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 

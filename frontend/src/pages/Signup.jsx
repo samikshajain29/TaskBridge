@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axiosConfig';
 import Input from '../components/Input';
@@ -82,76 +82,108 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen py-12 bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="w-full max-w-md p-8 mx-4 bg-white/80 backdrop-blur-xl border border-white shadow-2xl rounded-2xl animate-in fade-in zoom-in-95 duration-300">
+    <div className="relative flex items-center justify-center min-h-screen py-12 overflow-hidden bg-zinc-50 font-sans">
+      {/* Abstract Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-primary-100/50 blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-primary-200/40 blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+
+      <div className="relative w-full max-w-md px-6 py-8 mx-4">
+        {/* Logo Section */}
         <div className="flex flex-col items-center mb-8">
-          <div className="flex items-center justify-center w-12 h-12 mb-4 text-white bg-indigo-600 rounded-xl shadow-lg shadow-indigo-200">
-            <Layout className="w-6 h-6" />
+          <div className="group relative flex items-center justify-center w-14 h-14 mb-4 transition-all duration-500 transform hover:scale-110">
+            <div className="absolute inset-0 bg-primary-600 rounded-2xl rotate-6 group-hover:rotate-12 transition-transform opacity-20 blur-xl"></div>
+            <div className="relative flex items-center justify-center w-full h-full text-white bg-primary-600 rounded-2xl shadow-2xl shadow-primary-200 overflow-hidden">
+               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+               <Layout className="w-7 h-7 relative z-10" />
+            </div>
           </div>
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Create an account</h2>
-          <p className="mt-2 text-sm text-gray-500">Start managing your tasks today.</p>
+          <h2 className="text-3xl font-extrabold tracking-tight text-zinc-900 font-display">Join TaskBridge</h2>
+          <p className="mt-2 text-sm text-zinc-500">Bridge the gap between your ideas and execution.</p>
+        </div>
+
+        {/* Signup Card */}
+        <div className="glass p-8 rounded-3xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.05)] animate-in fade-in zoom-in-95 duration-700">
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-zinc-800">Create account</h3>
+            <p className="text-xs text-zinc-500 mt-1">Fill in your details to get started.</p>
+          </div>
+          
+          {apiError && (
+            <div className="p-4 mb-6 text-sm font-semibold text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl flex items-start gap-3 animate-in slide-in-from-top-2">
+              <div className="p-1 bg-rose-100 rounded-lg">
+                <svg className="w-4 h-4 text-rose-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
+                </svg>
+              </div>
+              {apiError}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="Full Name"
+              type="text"
+              id="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="e.g. John Doe"
+              error={errors.name}
+            />
+
+            <Input
+              label="Email Address"
+              type="email"
+              id="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="name@example.com"
+              error={errors.email}
+            />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                label="Password"
+                type="password"
+                id="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="••••••••"
+                error={errors.password}
+              />
+
+              <Input
+                label="Confirm"
+                type="password"
+                id="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="••••••••"
+                error={errors.confirmPassword}
+              />
+            </div>
+            
+            <div className="pt-4">
+              <Button type="submit" className="w-full h-12 text-base shadow-primary-200" isLoading={loading} disabled={!isFormValid}>
+                Get Started
+              </Button>
+            </div>
+          </form>
+          
+          <div className="mt-8 pt-6 border-t border-zinc-100 text-center">
+            <p className="text-sm text-zinc-500">
+              Already have an account?{' '}
+              <Link to="/login" className="font-bold text-primary-600 hover:text-primary-700 transition-colors underline-offset-4 hover:underline">
+                Sign in
+              </Link>
+            </p>
+          </div>
         </div>
         
-        {apiError && (
-          <div className="p-4 mb-6 text-sm font-medium text-red-700 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-            <svg className="w-5 h-5 text-red-400 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
-            </svg>
-            {apiError}
-          </div>
-        )}
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Full Name"
-            type="text"
-            id="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="John Doe"
-            error={errors.name}
-          />
-
-          <Input
-            label="Email"
-            type="email"
-            id="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="you@example.com"
-            error={errors.email}
-          />
-          
-          <Input
-            label="Password"
-            type="password"
-            id="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="••••••••"
-            error={errors.password}
-          />
-
-          <Input
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            placeholder="••••••••"
-            error={errors.confirmPassword}
-          />
-          
-          <Button type="submit" className="w-full mt-6" isLoading={loading} disabled={!isFormValid}>
-            Create account
-          </Button>
-        </form>
-        
-        <p className="mt-8 text-sm text-center text-gray-600">
-          Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-indigo-600 hover:text-indigo-500 hover:underline transition-colors">
-            Log in
-          </Link>
+        {/* Footer */}
+        <p className="mt-8 text-center text-xs text-zinc-400 uppercase tracking-widest font-semibold">
+          Secure & Reliable Task Management
         </p>
       </div>
     </div>

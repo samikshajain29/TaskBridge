@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { X } from 'lucide-react';
+import Input from '../Input';
+import Button from '../Button';
 
 const AddTaskModal = ({ isOpen, onClose, onSubmit, users = [] }) => {
   const [formData, setFormData] = useState({
@@ -20,95 +22,109 @@ const AddTaskModal = ({ isOpen, onClose, onSubmit, users = [] }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md p-6 bg-white shadow-xl rounded-2xl animate-in fade-in zoom-in-95">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Add New Task</h2>
-          <button onClick={onClose} className="p-1 text-gray-500 rounded-full hover:bg-gray-100 transition-colors">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Title <span className="text-red-500">*</span></label>
-            <input
-              type="text"
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Task title"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none"
-              rows="3"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Task details..."
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-md animate-in fade-in duration-300 px-4">
+      <div className="relative w-full max-w-lg bg-white shadow-2xl rounded-[2.5rem] border border-zinc-100 overflow-hidden animate-in zoom-in-95 duration-500">
+        <div className="p-8 md:p-10">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Priority</label>
-              <select
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
-                value={formData.priority}
-                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
+              <h2 className="text-2xl font-extrabold text-zinc-900 tracking-tight">Create Task</h2>
+              <p className="text-sm text-zinc-500 mt-1">Add a new task to your project board.</p>
             </div>
-            <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Due Date</label>
-              <input
-                type="date"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
-                value={formData.dueDate}
-                onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+            <button onClick={onClose} className="p-2 text-zinc-400 rounded-xl hover:bg-zinc-50 hover:text-zinc-600 transition-all">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-5">
+              <Input
+                label="Task Title"
+                type="text"
+                required
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="What needs to be done?"
               />
+
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">Description</label>
+                <textarea
+                  className="w-full px-4 py-3 bg-white border border-zinc-200 rounded-2xl outline-none transition-all duration-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 hover:border-zinc-300 resize-none text-sm text-zinc-700"
+                  rows="3"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Provide some context..."
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">Priority</label>
+                  <div className="relative group">
+                    <select
+                      className="w-full h-11 pl-4 pr-10 appearance-none bg-white border border-zinc-200 rounded-xl text-sm font-bold text-zinc-700 outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all cursor-pointer group-hover:border-zinc-300"
+                      value={formData.priority}
+                      onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-zinc-400 group-hover:text-primary-500 transition-colors">
+                       <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">Due Date</label>
+                  <input
+                    type="date"
+                    className="w-full h-11 px-4 bg-white border border-zinc-200 rounded-xl text-sm font-bold text-zinc-700 outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all hover:border-zinc-300"
+                    value={formData.dueDate}
+                    onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">Assign To</label>
+                <div className="relative group">
+                  <select
+                    className="w-full h-11 pl-4 pr-10 appearance-none bg-white border border-zinc-200 rounded-xl text-sm font-bold text-zinc-700 outline-none focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all cursor-pointer group-hover:border-zinc-300"
+                    value={formData.assignedTo}
+                    onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
+                    required
+                  >
+                    <option value="" disabled>Choose a team member</option>
+                    {users.map(user => (
+                      <option key={user._id} value={user._id}>{user.name}</option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-zinc-400 group-hover:text-primary-500 transition-colors">
+                     <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" /></svg>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">Assign To <span className="text-red-500">*</span></label>
-            <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
-              value={formData.assignedTo}
-              onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-              required
-            >
-              <option value="" disabled>Select a member</option>
-              {users.map(user => (
-                <option key={user._id} value={user._id}>{user.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex justify-end pt-4 mt-6 border-t border-gray-100">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 mr-3 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!formData.title.trim()}
-              className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Create Task
-            </button>
-          </div>
-        </form>
+            <div className="flex flex-col-reverse sm:flex-row justify-end items-center gap-4 pt-6 border-t border-zinc-100">
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-full sm:w-auto px-6 py-3 text-sm font-bold text-zinc-500 hover:text-zinc-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <Button
+                type="submit"
+                disabled={!formData.title.trim()}
+                className="w-full sm:w-auto shadow-primary-200"
+              >
+                Create Task
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -1,15 +1,14 @@
-import React from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Clock, User } from 'lucide-react';
 
 const priorityColors = {
-  high: 'bg-red-100 text-red-800 border-red-200',
-  medium: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-  low: 'bg-green-100 text-green-800 border-green-200'
+  high: 'bg-rose-50 text-rose-700 border-rose-100',
+  medium: 'bg-amber-50 text-amber-700 border-amber-100',
+  low: 'bg-emerald-50 text-emerald-700 border-emerald-100'
 };
 
-const TaskCard = ({ task, isAdmin, currentUser, onStatusChange, onTaskClick }) => {
+const TaskCard = ({ task, currentUser, onStatusChange, onTaskClick }) => {
   const isAssignedToMe = task.assignedTo?._id === currentUser?._id;
   const isAuthorized = isAssignedToMe;
 
@@ -32,11 +31,10 @@ const TaskCard = ({ task, isAdmin, currentUser, onStatusChange, onTaskClick }) =
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1,
+    opacity: isDragging ? 0.5 : 1,
   };
 
   const handleCardClick = (e) => {
-    // Don't open modal when interacting with status dropdown
     if (e.target.closest('select')) return;
     if (onTaskClick) {
       onTaskClick(task);
@@ -50,52 +48,67 @@ const TaskCard = ({ task, isAdmin, currentUser, onStatusChange, onTaskClick }) =
       {...attributes}
       {...listeners}
       onClick={handleCardClick}
-      className={`p-3 mb-3 bg-white border rounded-xl shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md transition-all ${isDragging ? 'ring-2 ring-indigo-500' : 'border-gray-200'}`}
+      className={`group relative p-4 mb-4 bg-white border rounded-2xl transition-all duration-300 cursor-grab active:cursor-grabbing hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-primary-200 ${isDragging ? 'ring-2 ring-primary-500 shadow-2xl z-50' : 'border-zinc-200'}`}
     >
-      <div className="flex flex-col gap-2 mb-2">
-        <div className="flex items-start justify-between">
-          <h4 className="font-semibold text-gray-800 break-words">{task.title}</h4>
-          <span className={`px-2 py-1 text-xs font-medium border rounded-full shrink-0 ${priorityColors[task.priority] || priorityColors.low}`}>
-            {task.priority?.charAt(0).toUpperCase() + task.priority?.slice(1) || 'Low'}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-2">
+          <h4 className="text-[15px] font-bold text-zinc-800 leading-snug group-hover:text-primary-700 transition-colors">{task.title}</h4>
+          <span className={`px-2.5 py-0.5 text-[10px] font-bold border rounded-lg uppercase tracking-wider shrink-0 ${priorityColors[task.priority] || priorityColors.low}`}>
+            {task.priority || 'low'}
           </span>
         </div>
-        {isAuthorized ? (
-          <select 
-            className="text-xs border-gray-200 rounded text-gray-600 focus:ring-indigo-500 focus:border-indigo-500 w-full p-1"
-            value={task.status}
-            onChange={(e) => {
-              if (onStatusChange) {
-                onStatusChange(task._id, e.target.value);
-              }
-            }}
-            onClick={(e) => e.stopPropagation()}
-            onPointerDown={(e) => e.stopPropagation()}
-          >
-            <option value="todo">To Do</option>
-            <option value="inprogress">In Progress</option>
-            <option value="done">Done</option>
-          </select>
-        ) : null}
-      </div>
-      
-      {task.description && (
-        <p className="mb-4 text-sm text-gray-500 line-clamp-2">{task.description}</p>
-      )}
 
-      <div className="flex items-center justify-between mt-4 text-xs text-gray-500">
-        <div className="flex items-center gap-1">
-          <Clock className="w-4 h-4" />
-          <span>{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : 'No date'}</span>
+        {task.description && (
+          <p className="text-xs text-zinc-500 line-clamp-2 leading-relaxed">{task.description}</p>
+        )}
+
+        <div className="flex items-center justify-between mt-2 pt-3 border-t border-zinc-50">
+          <div className="flex items-center gap-1.5 text-zinc-400">
+            <Clock className="w-3.5 h-3.5" />
+            <span className="text-[11px] font-medium">{task.dueDate ? new Date(task.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'No due date'}</span>
+          </div>
+          
+          <div className="flex items-center -space-x-1">
+             {task.assignedTo ? (
+               <div className="relative group/avatar">
+                  {task.assignedTo.avatar ? (
+                    <img src={task.assignedTo.avatar} alt={task.assignedTo.name} className="w-6 h-6 rounded-lg border-2 border-white ring-1 ring-zinc-100 object-cover" />
+                  ) : (
+                    <div className="flex items-center justify-center w-6 h-6 bg-primary-100 rounded-lg border-2 border-white ring-1 ring-zinc-100 text-[10px] font-bold text-primary-600">
+                      {task.assignedTo.name?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-zinc-900 text-white text-[10px] rounded-md opacity-0 group-hover/avatar:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                    {task.assignedTo.name}
+                  </div>
+               </div>
+             ) : (
+               <div className="flex items-center justify-center w-6 h-6 bg-zinc-100 rounded-lg border-2 border-white ring-1 ring-zinc-50">
+                 <User className="w-3 h-3 text-zinc-400" />
+               </div>
+             )}
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          {task.assignedTo?.avatar ? (
-            <img src={task.assignedTo.avatar} alt={task.assignedTo.name} className="w-6 h-6 rounded-full" />
-          ) : (
-            <div className="flex items-center justify-center w-6 h-6 bg-gray-200 rounded-full" title={task.assignedTo?.name || 'Unassigned'}>
-              <User className="w-4 h-4 text-gray-500" />
-            </div>
-          )}
-        </div>
+
+        {isAuthorized && (
+          <div className="mt-1">
+             <select 
+              className="w-full text-[11px] font-bold py-1.5 px-2 bg-zinc-50 border-none rounded-lg text-zinc-600 focus:ring-2 focus:ring-primary-500/20 transition-all cursor-pointer hover:bg-zinc-100"
+              value={task.status}
+              onChange={(e) => {
+                if (onStatusChange) {
+                  onStatusChange(task._id, e.target.value);
+                }
+              }}
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              <option value="todo">To Do</option>
+              <option value="inprogress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+        )}
       </div>
     </div>
   );

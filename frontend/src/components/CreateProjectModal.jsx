@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { X, Calendar, Palette } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { X } from 'lucide-react';
 import Input from './Input';
 import Button from './Button';
 
@@ -19,47 +19,38 @@ const PRESET_COLORS = [
 ];
 
 const PRIORITIES = [
-  { value: 'low', label: 'Low', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
-  { value: 'medium', label: 'Medium', color: 'bg-amber-100 text-amber-700 border-amber-200' },
-  { value: 'high', label: 'High', color: 'bg-red-100 text-red-700 border-red-200' },
+  { value: 'low', label: 'Low', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+  { value: 'medium', label: 'Medium', color: 'bg-amber-50 text-amber-700 border-amber-100' },
+  { value: 'high', label: 'High', color: 'bg-rose-50 text-rose-700 border-rose-100' },
 ];
 
 const CreateProjectModal = ({ isOpen, onClose, onSubmit, loading }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    color: '',
+    color: '#8b5cf6',
     dueDate: '',
-    priority: '',
+    priority: 'medium',
     teamSize: '',
   });
 
   const [touched, setTouched] = useState({});
 
-  // --- Validation Logic ---
   const errors = useMemo(() => {
     const e = {};
-
-    // Project Name: required, min 3 chars
     if (!formData.name.trim()) {
       e.name = 'Project name is required';
     } else if (formData.name.trim().length < 3) {
       e.name = 'Project name must be at least 3 characters';
     }
-
-    // Description: required, min 10 chars
     if (!formData.description.trim()) {
       e.description = 'Description is required';
     } else if (formData.description.trim().length < 10) {
       e.description = 'Description must be at least 10 characters';
     }
-
-    // Color: required
     if (!formData.color) {
       e.color = 'Please select a project color';
     }
-
-    // Due Date: required, must be future
     if (!formData.dueDate) {
       e.dueDate = 'Due date is required';
     } else {
@@ -70,12 +61,9 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, loading }) => {
         e.dueDate = 'Due date must be in the future';
       }
     }
-
-    // Priority: required
     if (!formData.priority) {
       e.priority = 'Please select a priority level';
     }
-
     return e;
   }, [formData]);
 
@@ -90,7 +78,7 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, loading }) => {
   };
 
   const resetForm = () => {
-    setFormData({ name: '', description: '', color: '', dueDate: '', priority: '', teamSize: '' });
+    setFormData({ name: '', description: '', color: '#8b5cf6', dueDate: '', priority: 'medium', teamSize: '' });
     setTouched({});
   };
 
@@ -103,25 +91,17 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, loading }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Mark all required fields as touched to show errors
     setTouched({ name: true, description: true, color: true, dueDate: true, priority: true });
-
     if (!isFormValid) return;
-
-    // Only send fields the backend supports (name, description, color)
-    // Extra fields are frontend-only for now
     const payload = {
       name: formData.name.trim(),
       description: formData.description.trim(),
       color: formData.color,
     };
-
     onSubmit(payload);
     resetForm();
   };
 
-  // Get today's date string for the min attribute on the date input
   const getTomorrowStr = () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
@@ -129,172 +109,150 @@ const CreateProjectModal = ({ isOpen, onClose, onSubmit, loading }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-lg p-6 mx-4 bg-white shadow-xl rounded-2xl animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto custom-scrollbar">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-800">Create New Project</h2>
-          <button onClick={handleClose} className="p-1 text-gray-500 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Project Name */}
-          <Input
-            label="Project Name"
-            id="project-name"
-            value={formData.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            onBlur={() => handleBlur('name')}
-            placeholder="e.g., Marketing Campaign"
-            error={touched.name ? errors.name : null}
-          />
-
-          {/* Description */}
-          <div className="flex flex-col">
-            <label htmlFor="project-description" className="mb-1.5 text-sm font-medium text-gray-700">
-              Description <span className="text-red-400">*</span>
-            </label>
-            <textarea
-              id="project-description"
-              className={`w-full px-4 py-2.5 text-gray-800 bg-white border rounded-lg focus:outline-none focus:ring-4 transition-all duration-200 resize-none ${
-                touched.description && errors.description
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                  : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-400'
-              }`}
-              rows="3"
-              value={formData.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              onBlur={() => handleBlur('description')}
-              placeholder="What is this project about? (min 10 characters)"
-            />
-            {touched.description && errors.description && (
-              <span className="mt-1.5 text-xs font-medium text-red-500 animate-in fade-in slide-in-from-top-1">{errors.description}</span>
-            )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-md animate-in fade-in duration-300 px-4">
+      <div className="relative w-full max-w-xl bg-white shadow-2xl rounded-[2.5rem] border border-zinc-100 overflow-hidden animate-in zoom-in-95 duration-500 max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div className="p-8 md:p-10">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-extrabold text-zinc-900 tracking-tight">New Project</h2>
+              <p className="text-sm text-zinc-500 mt-1">Start a fresh initiative for your team.</p>
+            </div>
+            <button onClick={handleClose} className="p-2 text-zinc-400 rounded-xl hover:bg-zinc-50 hover:text-zinc-600 transition-all">
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
-          {/* Project Color */}
-          <div className="flex flex-col">
-            <label className="mb-1.5 text-sm font-medium text-gray-700 flex items-center gap-1.5">
-              <Palette className="w-4 h-4 text-gray-400" />
-              Project Color <span className="text-red-400">*</span>
-            </label>
-            <div className="flex flex-wrap gap-2.5 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              {PRESET_COLORS.map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => { handleChange('color', c); handleBlur('color'); }}
-                  className={`w-8 h-8 rounded-full transition-all duration-200 focus:outline-none border-2 hover:scale-110 ${
-                    formData.color === c
-                      ? 'border-gray-800 ring-2 ring-offset-2 ring-indigo-400 scale-110'
-                      : 'border-transparent hover:border-gray-300'
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-5">
+              <Input
+                label="Project Name"
+                id="project-name"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                onBlur={() => handleBlur('name')}
+                placeholder="e.g., Q3 Product Launch"
+                error={touched.name ? errors.name : null}
+              />
+
+              <div>
+                <label htmlFor="project-description" className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">
+                  Description <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  id="project-description"
+                  className={`w-full px-4 py-3 text-zinc-700 bg-white border rounded-2xl outline-none transition-all duration-300 resize-none text-sm ${
+                    touched.description && errors.description
+                      ? 'border-rose-300 focus:ring-rose-500/10 focus:border-rose-500'
+                      : 'border-zinc-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 hover:border-zinc-300'
                   }`}
-                  style={{ backgroundColor: c }}
-                  title={c}
+                  rows="3"
+                  value={formData.description}
+                  onChange={(e) => handleChange('description', e.target.value)}
+                  onBlur={() => handleBlur('description')}
+                  placeholder="Tell us what this project is about..."
                 />
-              ))}
-            </div>
-            {formData.color && (
-              <div className="mt-2 flex items-center gap-2">
-                <span className="w-4 h-4 rounded-full" style={{ backgroundColor: formData.color }} />
-                <span className="text-xs text-gray-500">Selected: {formData.color}</span>
+                {touched.description && errors.description && (
+                  <span className="mt-1.5 text-[10px] font-bold text-rose-500 uppercase tracking-wider ml-1">{errors.description}</span>
+                )}
               </div>
-            )}
-            {touched.color && errors.color && (
-              <span className="mt-1.5 text-xs font-medium text-red-500 animate-in fade-in slide-in-from-top-1">{errors.color}</span>
-            )}
-          </div>
 
-          {/* Due Date & Priority — side by side */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Due Date */}
-            <div className="flex flex-col">
-              <label htmlFor="project-dueDate" className="mb-1.5 text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-gray-400" />
-                Due Date <span className="text-red-400">*</span>
-              </label>
-              <input
-                type="date"
-                id="project-dueDate"
-                value={formData.dueDate}
-                min={getTomorrowStr()}
-                onChange={(e) => handleChange('dueDate', e.target.value)}
-                onBlur={() => handleBlur('dueDate')}
-                className={`w-full px-4 py-2.5 text-gray-800 bg-white border rounded-lg focus:outline-none focus:ring-4 transition-all duration-200 ${
-                  touched.dueDate && errors.dueDate
-                    ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                    : 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-400'
-                }`}
-              />
-              {touched.dueDate && errors.dueDate && (
-                <span className="mt-1.5 text-xs font-medium text-red-500 animate-in fade-in slide-in-from-top-1">{errors.dueDate}</span>
-              )}
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">
+                  Brand Color <span className="text-rose-500">*</span>
+                </label>
+                <div className="flex flex-wrap gap-2.5 p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
+                  {PRESET_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => { handleChange('color', c); handleBlur('color'); }}
+                      className={`w-8 h-8 rounded-full transition-all duration-300 border-2 hover:scale-110 ${
+                        formData.color === c
+                          ? 'border-white ring-4 ring-primary-500/30 scale-110'
+                          : 'border-transparent hover:border-zinc-200 shadow-sm'
+                      }`}
+                      style={{ backgroundColor: c }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="project-dueDate" className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">
+                    Target Date <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    id="project-dueDate"
+                    value={formData.dueDate}
+                    min={getTomorrowStr()}
+                    onChange={(e) => handleChange('dueDate', e.target.value)}
+                    onBlur={() => handleBlur('dueDate')}
+                    className={`w-full h-11 px-4 text-zinc-700 bg-white border rounded-xl font-bold text-sm outline-none transition-all ${
+                      touched.dueDate && errors.dueDate
+                        ? 'border-rose-300 focus:ring-rose-500/10 focus:border-rose-500'
+                        : 'border-zinc-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 hover:border-zinc-300'
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="project-teamSize" className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">
+                    Team Size <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">(Optional)</span>
+                  </label>
+                  <input
+                    type="number"
+                    id="project-teamSize"
+                    value={formData.teamSize}
+                    min="1"
+                    onChange={(e) => handleChange('teamSize', e.target.value)}
+                    placeholder="e.g., 5"
+                    className="w-full h-11 px-4 text-zinc-700 bg-white border border-zinc-200 rounded-xl font-bold text-sm outline-none transition-all focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 hover:border-zinc-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-zinc-700 ml-1">Priority</label>
+                <div className="flex gap-3">
+                  {PRIORITIES.map((p) => (
+                    <button
+                      key={p.value}
+                      type="button"
+                      onClick={() => { handleChange('priority', p.value); handleBlur('priority'); }}
+                      className={`flex-1 py-3 px-3 text-xs font-bold rounded-xl border transition-all duration-300 uppercase tracking-wider ${
+                        formData.priority === p.value
+                          ? `${p.color} border-current shadow-sm scale-[1.02]`
+                          : 'bg-white text-zinc-400 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50'
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            {/* Team Size (optional) */}
-            <div className="flex flex-col">
-              <label htmlFor="project-teamSize" className="mb-1.5 text-sm font-medium text-gray-700">
-                Team Size <span className="text-xs text-gray-400">(optional)</span>
-              </label>
-              <input
-                type="number"
-                id="project-teamSize"
-                value={formData.teamSize}
-                min="1"
-                max="100"
-                onChange={(e) => handleChange('teamSize', e.target.value)}
-                placeholder="e.g., 5"
-                className="w-full px-4 py-2.5 text-gray-800 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-4 focus:border-indigo-500 focus:ring-indigo-500/20 hover:border-gray-400 transition-all duration-200"
-              />
+            <div className="flex flex-col-reverse sm:flex-row justify-end items-center gap-4 pt-6 border-t border-zinc-100">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="w-full sm:w-auto px-6 py-3 text-sm font-bold text-zinc-500 hover:text-zinc-800 transition-colors"
+              >
+                Cancel
+              </button>
+              <Button
+                type="submit"
+                isLoading={loading}
+                disabled={!isFormValid}
+                className="w-full sm:w-auto shadow-primary-200"
+              >
+                Launch Project
+              </Button>
             </div>
-          </div>
-
-          {/* Priority */}
-          <div className="flex flex-col">
-            <label className="mb-1.5 text-sm font-medium text-gray-700">
-              Priority <span className="text-red-400">*</span>
-            </label>
-            <div className="flex gap-3">
-              {PRIORITIES.map((p) => (
-                <button
-                  key={p.value}
-                  type="button"
-                  onClick={() => { handleChange('priority', p.value); handleBlur('priority'); }}
-                  className={`flex-1 py-2.5 px-3 text-sm font-medium rounded-lg border-2 transition-all duration-200 focus:outline-none ${
-                    formData.priority === p.value
-                      ? `${p.color} border-current ring-2 ring-offset-1 ring-current/20 scale-[1.02]`
-                      : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-            {touched.priority && errors.priority && (
-              <span className="mt-1.5 text-xs font-medium text-red-500 animate-in fade-in slide-in-from-top-1">{errors.priority}</span>
-            )}
-          </div>
-
-          {/* Submit */}
-          <div className="flex justify-end pt-4 mt-2 border-t border-gray-100">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleClose}
-              className="mr-3"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              isLoading={loading}
-              disabled={!isFormValid}
-            >
-              Create Project
-            </Button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

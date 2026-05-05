@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 const Loader = ({ size = 'md', color = 'text-indigo-600' }) => {
   const sizes = {

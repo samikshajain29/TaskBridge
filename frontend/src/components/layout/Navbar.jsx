@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Menu, LogOut, User } from 'lucide-react';
@@ -23,45 +23,63 @@ const Navbar = ({ onMenuClick }) => {
   }, []);
 
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-6 bg-white/80 backdrop-blur-md border-b border-gray-200">
+    <header className="sticky top-0 z-40 w-full glass border-b border-zinc-200/50 h-16 px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
         <button 
           onClick={onMenuClick}
-          className="p-2 -ml-2 text-gray-500 rounded-lg lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+          className="p-2 -ml-2 text-zinc-500 rounded-xl lg:hidden hover:bg-zinc-100 transition-all active:scale-90"
         >
           <Menu className="w-5 h-5" />
         </button>
-        {showProjectSwitcher && <ProjectSwitcher />}
+        {showProjectSwitcher && (
+          <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+            <ProjectSwitcher />
+          </div>
+        )}
       </div>
 
       <div className="relative flex items-center gap-4" ref={dropdownRef}>
         <button 
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 p-1 focus:outline-none rounded-full hover:bg-gray-50 transition-colors"
+          className="group flex items-center gap-3 p-1.5 pr-3 focus:outline-none rounded-2xl hover:bg-zinc-100/80 transition-all duration-300 active:scale-95"
         >
-          <span className="hidden text-sm font-medium text-gray-700 md:block ml-2">{user?.name}</span>
-          {user?.avatar ? (
-            <img src={user.avatar} alt="Avatar" className="w-8 h-8 rounded-full border border-gray-200 object-cover" />
-          ) : (
-            <div className="flex items-center justify-center w-8 h-8 bg-indigo-100 rounded-full border border-indigo-200">
-              <User className="w-4 h-4 text-indigo-600" />
-            </div>
-          )}
+          <div className="relative">
+            {user?.avatar ? (
+              <img src={user.avatar} alt="Avatar" className="w-9 h-9 rounded-xl border-2 border-white shadow-sm object-cover" />
+            ) : (
+              <div className="flex items-center justify-center w-9 h-9 bg-primary-100 rounded-xl border-2 border-white shadow-sm">
+                <User className="w-5 h-5 text-primary-600" />
+              </div>
+            )}
+            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
+          </div>
+          <div className="hidden md:block text-left">
+            <p className="text-sm font-bold text-zinc-800 leading-none">{user?.name}</p>
+            <p className="text-[10px] font-medium text-zinc-500 mt-1 uppercase tracking-wider">Online</p>
+          </div>
         </button>
 
         {isDropdownOpen && (
-          <div className="absolute right-0 w-48 py-1 mt-2 origin-top-right bg-white rounded-xl shadow-lg border border-gray-100 top-full animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-4 py-3 border-b border-gray-100 md:hidden">
-              <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
-              <p className="text-xs text-gray-500 truncate mt-0.5">{user?.email}</p>
+          <div className="absolute right-0 top-full mt-2 w-56 py-2 origin-top-right bg-white rounded-2xl shadow-2xl shadow-zinc-200/50 border border-zinc-100 animate-in fade-in zoom-in-95 duration-200 z-50">
+            <div className="px-4 py-3 border-b border-zinc-50 md:hidden">
+              <p className="text-sm font-bold text-zinc-900 truncate">{user?.name}</p>
+              <p className="text-xs text-zinc-500 truncate mt-0.5">{user?.email}</p>
             </div>
-            <button
-              onClick={logout}
-              className="flex items-center w-full gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign out
-            </button>
+            <div className="px-2 py-1">
+              <button
+                className="flex items-center w-full gap-3 px-3 py-2.5 text-sm font-medium text-zinc-600 rounded-xl hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
+              >
+                <User className="w-4 h-4" />
+                Profile Settings
+              </button>
+              <button
+                onClick={logout}
+                className="flex items-center w-full gap-3 px-3 py-2.5 text-sm font-bold text-rose-600 rounded-xl hover:bg-rose-50 transition-colors mt-1"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign out
+              </button>
+            </div>
           </div>
         )}
       </div>

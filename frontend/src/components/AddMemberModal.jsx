@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Search, Plus, UserPlus } from 'lucide-react';
 import api from '../api/axiosConfig';
 
@@ -55,77 +55,98 @@ const AddMemberModal = ({ isOpen, onClose, projectId, currentMembers = [], onMem
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-md p-6 mx-4 bg-white shadow-xl rounded-2xl animate-in fade-in zoom-in-95">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-indigo-600" />
-            Add Member
-          </h2>
-          <button onClick={onClose} className="p-1 text-gray-500 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {error && (
-          <div className="p-3 mb-4 text-sm text-red-600 bg-red-50 rounded-lg">
-            {error}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-md animate-in fade-in duration-300 px-4">
+      <div className="relative w-full max-w-lg bg-white shadow-2xl rounded-[2.5rem] border border-zinc-100 overflow-hidden animate-in zoom-in-95 duration-500">
+        <div className="p-8 md:p-10">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-extrabold text-zinc-900 tracking-tight flex items-center gap-3">
+                Invite Team
+              </h2>
+              <p className="text-sm text-zinc-500 mt-1">Add collaborators to your workspace.</p>
+            </div>
+            <button onClick={onClose} className="p-2 text-zinc-400 rounded-xl hover:bg-zinc-50 hover:text-zinc-600 transition-all">
+              <X className="w-5 h-5" />
+            </button>
           </div>
-        )}
 
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search by name or email..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </div>
-
-        <div className="min-h-[150px] max-h-[300px] overflow-y-auto custom-scrollbar">
-          {loading ? (
-            <div className="flex items-center justify-center h-32">
-              <div className="w-6 h-6 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          ) : users.length > 0 ? (
-            <ul className="space-y-2">
-              {users.map(user => (
-                <li key={user._id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center gap-3 overflow-hidden">
-                    {user.avatar ? (
-                      <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full shrink-0 object-cover" />
-                    ) : (
-                      <div className="flex items-center justify-center w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full font-semibold shrink-0">
-                        {user.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    <div className="truncate">
-                      <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleAddMember(user.email)}
-                    disabled={actionLoading}
-                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-md transition-colors disabled:opacity-50"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Add
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : query.trim() ? (
-            <div className="flex items-center justify-center h-32 text-sm text-gray-500">
-              No users found matching "{query}"
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-32 text-sm text-gray-500">
-              Start typing to search for users...
+          {error && (
+            <div className="p-4 mb-6 text-xs font-bold uppercase tracking-wider text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl animate-in slide-in-from-top-2">
+              {error}
             </div>
           )}
+
+          <div className="relative mb-8 group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-400 group-focus-within:text-primary-500 transition-colors" />
+            <input
+              type="text"
+              placeholder="Search by name or email..."
+              className="w-full pl-12 pr-4 h-14 bg-zinc-50 border border-zinc-200 rounded-2xl outline-none transition-all duration-300 focus:bg-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 text-sm text-zinc-700 font-medium"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+
+          <div className="min-h-[200px] max-h-[350px] overflow-y-auto pr-2 -mr-2 custom-scrollbar">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center h-48 gap-4">
+                <div className="w-10 h-10 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Searching database...</p>
+              </div>
+            ) : users.length > 0 ? (
+              <ul className="space-y-3">
+                {users.map(user => (
+                  <li key={user._id} className="flex items-center justify-between p-4 bg-white border border-zinc-100 rounded-[1.5rem] hover:border-primary-200 hover:shadow-lg hover:shadow-primary-500/5 transition-all group/user">
+                    <div className="flex items-center gap-4 overflow-hidden">
+                      {user.avatar ? (
+                        <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-xl shrink-0 object-cover border-2 border-zinc-50 shadow-sm" />
+                      ) : (
+                        <div className="flex items-center justify-center w-10 h-10 bg-primary-100 text-primary-600 rounded-xl font-bold shrink-0 text-sm shadow-sm">
+                          {user.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="truncate">
+                        <p className="text-sm font-bold text-zinc-800 truncate">{user.name}</p>
+                        <p className="text-[10px] font-bold text-zinc-400 truncate uppercase tracking-wider">{user.email}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleAddMember(user.email)}
+                      disabled={actionLoading}
+                      className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-50 text-primary-600 hover:bg-primary-600 hover:text-white transition-all disabled:opacity-50"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : query.trim() ? (
+              <div className="flex flex-col items-center justify-center h-48 text-center p-8 bg-zinc-50 rounded-[2rem] border border-dashed border-zinc-200">
+                <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">
+                  No users found matching<br/>
+                  <span className="text-zinc-600">"{query}"</span>
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-48 text-center p-8 bg-zinc-50 rounded-[2rem] border border-dashed border-zinc-200">
+                <div className="p-3 bg-white rounded-xl shadow-sm mb-3">
+                   <UserPlus className="w-6 h-6 text-zinc-300" />
+                </div>
+                <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">
+                  Enter a name or email to<br/>begin searching
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-zinc-100 flex justify-end">
+             <button
+                onClick={onClose}
+                className="px-6 py-2 text-xs font-bold text-zinc-400 hover:text-zinc-800 transition-colors uppercase tracking-widest"
+              >
+                Done
+              </button>
+          </div>
         </div>
       </div>
     </div>

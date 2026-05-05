@@ -19,7 +19,7 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: "https://taskbridgefrontend.onrender.com",
+    origin: "https://taskbridge-frontend.onrender.com",
     credentials: true,
   })
 );
